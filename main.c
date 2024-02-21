@@ -16,14 +16,14 @@
     Controls: 'A' = Turn Left / 'D' = Turn Right / 'W' = Walk Forwards / 'S' = Walk Backwards / 'Esc' = Exit 
 */
 
-#define _USE_MATH_DEFINES   // Math Macro Definition 
+#define _USE_MATH_DEFINES           // Specify Math Constants 
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include <curses.h>         // Comfortable Input / Output with Terminal
-#include <windows.h>        // Windows API
+#include <curses.h>                 // Library for Сomfortable I/O using the Terminal
+#include <windows.h>                // Windows API
 
 #define screenWidth 120             // Console Screen Size X (Columns)
 #define screenHeight 30             // Console Screen Size Y (Rows)
@@ -49,12 +49,12 @@ char map[mapHeight][mapWidth] = {   // Create Map of the World: '#' = wall / '.'
 };
 float frameTime = 0.0f;             // Time of One Frame
 
-float playerX = 1.0f;			// Player Start Position X (Columns)
-float playerY = 1.00f;          // Player Start Position Y (Columns)
-float playerDir = 0.0f;         // Players Dirrection
-float playerSpeed = 5.0f;		// Walking Speed
-float playerFOV = M_PI / 3;     // Players Field of View
-float playersMaxDepth = 30.0f;  // Maximum Viewing Distance
+float playerX = 5.0f;               // Player Start Position coordinate X 
+float playerY = 14.0f;              // Player Start Position coordinate Y 
+float playerDir = M_PI;             // Players Dirrection
+float playerSpeed = 5.0f;		    // Walking Speed
+float playerFOV = M_PI / 3.0f;      // Players Field of View
+float playersMaxDepth = 30.0f;      // Maximum Viewing Distance
 
 char gradient[10] = " .:~=+*#%@";
 
@@ -82,12 +82,12 @@ void checkKeyState()
 {
     if (GetAsyncKeyState((unsigned short)'A') & 0x8000)             // Обработка поворота влево
     {
-        playerDir -= (playerSpeed * 0.75f) * frameTime;
+        playerDir += (playerSpeed * 0.75f) * frameTime;
     }
 
     if (GetAsyncKeyState((unsigned short)'D') & 0x8000)             // Обработка поворота вправо 
     {
-        playerDir += (playerSpeed * 0.75f) * frameTime;
+        playerDir -= (playerSpeed * 0.75f) * frameTime;
     }
 
     if (GetAsyncKeyState((unsigned short)'W') & 0x8000)             // Обработка движения вперед 
@@ -122,7 +122,7 @@ void checkKeyState()
 
 void displayStats()
 {
-    mvprintw(0,0,"x = %3.2f, y = %3.2f, direction = %3.2f, fps = %3.2f",playerX, playerY, playerDir, 1.0f / frameTime);
+    mvprintw(0,0,"x = %3.2f, y = %3.2f, direction = %3.2f, fps = %d",playerX, playerY, playerDir, (int) (1.0f / frameTime));
 
     for (int i = 0; i < mapHeight; i++)
     {
@@ -135,7 +135,54 @@ void displayStats()
 
 void renderFrame()
 {
+    for (int x = 0; x < screenWidth; x++)
+    {
+        float rayDir = (playerDir + playerFOV / 2.0f) - ((float)x / (float)screenWidth) * playerFOV;    // Направление каждого луча итерации
+        float wallDistance = 0.0f;                                                                      // Расстояние до препятствия в направлении луча
+        int hitWallFlag = 0;                                                                            //   Флаг, достигнул ли луч стену
 
+        float rayX = sinf(rayDir);                                                                      // Координаты вектора луча по Х
+        float rayY = cosf(rayDir);                                                                      // Координаты вектора луча по У
+ 
+        while (!hitWallFlag && wallDistance < playersMaxDepth)          // Пока не столкнулись со стеной или не вышли за радиус видимости
+        {
+            wallDistance += 0.1f;                                       // Постепенно идем в направлении луча
+ 
+            int tX = (int)(playerX + rayX * wallDistance);              // Координаты конца луча по X
+            int tY = (int)(playerY + rayY * wallDistance);              // Координаты конца луча по У
+ 
+            if (tX < 0 || tX >= mapWidth || tY < 0 || tY >= mapHeight)  // Если мы вышли за карту, то дальше смотреть нет смысла
+            { 
+                hitWallFlag = 1;                                        // Фиксируем удар на расстоянии видимости
+                wallDistance = playersMaxDepth;
+            }
+            else if ( map[tY][tX] == '#')                               // Если встретили стену
+            { 
+                hitWallFlag = 1;                                        // Фиксируем удар на расстоянии до стены
+            }
+        }
+
+        int ceilingHeight = (float)(screenHeight/2.0) - screenHeight / ((float)wallDistance);   // Высота потолка
+        int floorHeight = (float)(screenHeight/2.0) + screenHeight / ((float)wallDistance);     // Высота пола
+
+        char wallShader = '@';
+ 
+        for (int y = 0; y < screenHeight; y++)
+        {
+            if (y <= ceilingHeight)
+            {
+                mvprintw(y,x,"%c",' '); 
+            } 
+            else if (y > ceilingHeight && y <= floorHeight)
+            {
+                mvprintw(y,x,"%c",wallShader);
+            } 
+            else
+            {
+                mvprintw(y,x,"%c",' ');
+            } 
+        }
+    }
 }
 
 int main() 
@@ -160,16 +207,17 @@ int main()
         frameTime = (float)(timeAfter - timeBefore) / CLOCKS_PER_SEC;   // Подсчет времени кадра
         timeBefore = timeAfter;                                         // Обновляем время начала кадра
         
-        map[(int)playerY][(int)playerX] = '.';  // Когда игрок начинает движение, он удаляется с карты
+        map[(int)playerY][(int)playerX] = '.';                          // Когда игрок начинает движение, он удаляется с карты
 
-        checkKeyState();                        // Check the Players Movement Depends on Key  
+        checkKeyState();                                                // Check the Players Movement depends on Key  
 
-        map[(int)playerY][(int)playerX] = 'P';  // Когда игрок закончил движение, он добавляется на карту по новым координатам
+        map[(int)playerY][(int)playerX] = 'P';                          // Когда игрок закончил движение, он добавляется на карту по новым координатам
 
-        displayStats();                         // Display of Statistics and Minicart
+        renderFrame();                                                  // Render a New Frame depends on New Coordinates
+
+        displayStats();                                                 // Display Stats and Mini-map on the Screen
     
-        refresh();                              // Обновляем кадр
-
+        refresh();                                                      // Обновляем кадр
     }
 
     endwin();   // Выходим из curses
