@@ -136,33 +136,78 @@ void renderFrame()
 {
     for (int x = 0; x < screenWidth; x++)
     {
-        float rayDir = (playerDir + playerFOV / 2.0f) - ((float)x / (float)screenWidth) * playerFOV;    // Направление каждого луча итерации
-        float wallDistance = 0.0f;                                                                      // Расстояние до препятствия в направлении луча
-        int hitWallFlag = 0;                                                                            //   Флаг, достигнул ли луч стену
+        float rayDir = (playerDir + playerFOV / 2.0f) - ((float)x / (float)screenWidth) * playerFOV;            // Направление каждого луча итерации
+        float wallDistance = 0.0f;                                                                              // Расстояние до препятствия в направлении луча
+        
+        int hitWallFlag = 0;                                                                                    // Флаг, достигнул ли луч стену
+        int hitEdgeFlag = 0;                                                                                    // Флаг, попал ли луч на грань стены
 
-        float rayX = sinf(rayDir);                                                                      // Координаты вектора луча по Х
-        float rayY = cosf(rayDir);                                                                      // Координаты вектора луча по У
+        float rayX = sinf(rayDir);                                                                              // Координаты вектора луча по Х
+        float rayY = cosf(rayDir);                                                                              // Координаты вектора луча по У
  
-        while (!hitWallFlag && wallDistance < playersMaxDepth)          // Пока не столкнулись со стеной или не вышли за радиус видимости
+        while (!hitWallFlag && wallDistance < playersMaxDepth)                                                  // Пока не столкнулись со стеной или не вышли за радиус видимости
         {
-            wallDistance += 0.1f;                                       // Постепенно идем в направлении луча
+            wallDistance += 0.1f;                                                                               // Постепенно идем в направлении луча
  
-            int tX = (int)(playerX + rayX * wallDistance);              // Координаты конца луча по X
-            int tY = (int)(playerY + rayY * wallDistance);              // Координаты конца луча по У
+            int distanceX = (int)(playerX + rayX * wallDistance);                                               // Координаты конца луча по X
+            int distanceY = (int)(playerY + rayY * wallDistance);                                               // Координаты конца луча по У
  
-            if (tX < 0 || tX >= mapWidth || tY < 0 || tY >= mapHeight)  // Если мы вышли за карту, то дальше смотреть нет смысла
+            if (distanceX < 0 || distanceX >= mapWidth || distanceY < 0 || distanceY >= mapHeight)              // Если мы вышли за карту, то дальше смотреть нет смысла
             { 
-                hitWallFlag = 1;                                        // Фиксируем удар на расстоянии видимости
+                hitWallFlag = 1;                                                                                // Фиксируем удар на расстоянии видимости
                 wallDistance = playersMaxDepth;
             }
-            else if ( map[tY][tX] == '#')                               // Если встретили стену
+            else if ( map[distanceY][distanceX] == '#')                                                         // Если встретили стену
             { 
-                hitWallFlag = 1;                                        // Фиксируем удар на расстоянии до стены
+                hitWallFlag = 1;                                                                                // Фиксируем удар на расстоянии до стены
+
+                float edgeDistance[4]; 
+                float dotProduct[4];
+
+                for (int i = 0; i < 4; i++)                                                                     // Вычисляем расстояние и скалярное произведение для каждой грани
+                {
+                    int edgeX = i % 2;
+                    int edgeY = i / 2;
+
+                    float vectorX = (float)distanceX + edgeX - playerX;
+                    float vectorY = (float)distanceY + edgeY - playerY;
+
+                    edgeDistance[i] = sqrtf(vectorX * vectorX + vectorY * vectorY);
+                    dotProduct[i] = (rayX * vectorX / edgeDistance[i]) + (rayY * vectorY / edgeDistance[i]);
+                }
+                
+                for (int i = 0; i < 4; i++)                                                                     // Сортируем в порядке от близжайшей до дальней
+                {
+                    for (int j = i + 1; j < 4; j++) 
+                    {
+                        if (edgeDistance[j] < edgeDistance[i]) 
+                        {
+                            float temp = edgeDistance[j];
+                            edgeDistance[j] = edgeDistance[i];
+                            edgeDistance[i] = temp;
+
+                            temp = dotProduct[j];
+                            dotProduct[j] = dotProduct[i];
+                            dotProduct[i] = temp;
+                        }
+                    }
+                }
+
+                float proximity = 0.004f;                                                                       // Порог для определения близости к грани
+
+                for (int i = 0; i < 2; i++)                                                                     // Проверяем первые три/две грани на близость
+                {
+                    if (acosf(dotProduct[i]) < proximity) 
+                    {
+                        hitEdgeFlag = 1;
+                        break;
+                    }
+                }
             }
         }
 
-        int ceilingHeight = (float)(screenHeight/2.0) - screenHeight / ((float)wallDistance);   // Высота потолка
-        int floorHeight = (float)(screenHeight/2.0) + screenHeight / ((float)wallDistance);     // Высота пола
+        int ceilingHeight = (float)(screenHeight/2.0) - screenHeight / ((float)wallDistance);                   // Высота потолка
+        int floorHeight = (float)(screenHeight/2.0) + screenHeight / ((float)wallDistance);                     // Высота пола
 
         for (int y = 0; y < screenHeight; y++)
         {
@@ -192,7 +237,8 @@ void renderFrame()
                 else if (wallDistance < playersMaxDepth / 2.0f)		{wallShader = (randomNumber == 0?'x':'=');}
                 else if (wallDistance < playersMaxDepth)			{wallShader = (randomNumber == 0?'~':':');}
                 else											    {wallShader = ' ';}
-                
+                if (hitEdgeFlag)                                    {wallShader = ' ';}
+
                 attron(COLOR_PAIR(1));
                 mvprintw(y,x,"%c",wallShader);
                 attroff(COLOR_PAIR(1));
