@@ -10,7 +10,7 @@
 
     To compile the project:
             In command line:
-                > gcc -o main main.c -lncurses
+                > gcc -o main main.c -lpdcurses
                 > main
 
     Controls: 'A' = Turn Left / 'D' = Turn Right / 'W' = Walk Forwards / 'S' = Walk Backwards / 'Esc' = Exit 
@@ -54,9 +54,7 @@ float playerY = 14.0f;              // Player Start Position coordinate Y
 float playerDir = M_PI;             // Players Dirrection
 float playerSpeed = 5.0f;		    // Walking Speed
 float playerFOV = M_PI / 3.0f;      // Players Field of View
-float playersMaxDepth = 30.0f;      // Maximum Viewing Distance
-
-char gradient[10] = " .:~=+*#%@";
+float playersMaxDepth = 12.0f;      // Maximum Viewing Distance
 
 void setWindowSize()
 {
@@ -116,13 +114,14 @@ void checkKeyState()
 
     if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)                       // Обработка выхода из программы
     {
+        system("cls");
         exit(1);
     }
 }
 
 void displayStats()
 {
-    mvprintw(0,0,"x = %3.2f, y = %3.2f, direction = %3.2f, fps = %d",playerX, playerY, playerDir, (int) (1.0f / frameTime));
+    mvprintw(0,0,"x = %3.2f, y = %3.2f, direction = %3.2f, fps = %d ",playerX, playerY, playerDir, (int) (1.0f / frameTime));
 
     for (int i = 0; i < mapHeight; i++)
     {
@@ -165,21 +164,54 @@ void renderFrame()
         int ceilingHeight = (float)(screenHeight/2.0) - screenHeight / ((float)wallDistance);   // Высота потолка
         int floorHeight = (float)(screenHeight/2.0) + screenHeight / ((float)wallDistance);     // Высота пола
 
-        char wallShader = '@';
- 
         for (int y = 0; y < screenHeight; y++)
         {
             if (y <= ceilingHeight)
             {
-                mvprintw(y,x,"%c",' '); 
+                float d = 1.0f + ((float)y - screenHeight / 2.0) / ((float)screenHeight / 2.0);
+                int randomNumber = rand() % 2;
+
+                char ceilingShader = ' ';
+                if (d < 0.25f)          {ceilingShader = (randomNumber == 0?'x':'&');}
+                else if (d < 0.5f)      {ceilingShader = (randomNumber == 0?'+':'*');}
+                else if (d < 0.75f)     {ceilingShader = (randomNumber == 0?'~':',');}
+                else if (d < 0.9f)      {ceilingShader = (randomNumber == 0?'.':'-');}
+                else                    {ceilingShader = ' ';}
+
+                attron(COLOR_PAIR(2)); 
+                mvprintw(y,x,"%c",ceilingShader);
+                attroff(COLOR_PAIR(2));
             } 
             else if (y > ceilingHeight && y <= floorHeight)
             {
+                int randomNumber = rand() % 2;
+
+                char wallShader = ' ';
+                if (wallDistance <= playersMaxDepth / 4.0f)			{wallShader = (randomNumber == 0?'@':'%');}	
+                else if (wallDistance < playersMaxDepth / 3.0f)     {wallShader = (randomNumber == 0?'&':'*');}
+                else if (wallDistance < playersMaxDepth / 2.0f)		{wallShader = (randomNumber == 0?'x':'=');}
+                else if (wallDistance < playersMaxDepth)			{wallShader = (randomNumber == 0?'~':':');}
+                else											    {wallShader = ' ';}
+                
+                attron(COLOR_PAIR(1));
                 mvprintw(y,x,"%c",wallShader);
+                attroff(COLOR_PAIR(1));
             } 
             else
             {
-                mvprintw(y,x,"%c",' ');
+                float d = 1.0f - ((float)y - screenHeight / 2.0) / ((float)screenHeight / 2.0);
+                int randomNumber = rand() % 2;
+
+                char floorShader = ' ';
+                if (d < 0.25f)          {floorShader = (randomNumber == 0?'x':'&');}
+                else if (d < 0.5f)      {floorShader = (randomNumber == 0?'+':'*');}
+                else if (d < 0.75f)     {floorShader = (randomNumber == 0?'~':',');}
+                else if (d < 0.9f)      {floorShader = (randomNumber == 0?'.':'-');}
+                else                    {floorShader = ' ';}
+                
+                attron(COLOR_PAIR(3));
+                mvprintw(y,x,"%c",floorShader);
+                attroff(COLOR_PAIR(3));
             } 
         }
     }
@@ -187,19 +219,24 @@ void renderFrame()
 
 int main() 
 {
-    setWindowSize();                        // Initialization of Window Size
+    setWindowSize();                            // Initialization of Window Size
 
-    clock_t timeBefore, timeAfter;          // Инициализируем временные пременные 
-    timeBefore = clock();                   // Запоминаем текущее время 
+    srand(time(NULL));                          // Инициализируем генератор случайных чисел
+    clock_t timeBefore, timeAfter;              // Инициализируем временные пременные 
+    timeBefore = clock();                       // Запоминаем текущее время 
     timeAfter = clock();
 
-    map[(int)playerY][(int)playerX] = 'P';  // Инициализация игрока на карте
+    map[(int)playerY][(int)playerX] = 'P';      // Инициализация игрока на карте
 
-    initscr();                              // Инициализируем режим curses
-    cbreak();                               // Отключаем буферизацию строк
-    noecho();                               // Не отображаем вводимые символы
-    nodelay(stdscr, TRUE);                  // Включаем неблокирующий режим для getch()
-    keypad(stdscr, TRUE);                   // Получаем специальные клавиши, такие как стрелки
+    initscr();                                  // Инициализируем режим curses
+    cbreak();                                   // Отключаем буферизацию строк
+    noecho();                                   // Не отображаем вводимые символы
+    nodelay(stdscr, TRUE);                      // Включаем неблокирующий режим для getch()
+    keypad(stdscr, TRUE);                       // Получаем специальные клавиши, такие как стрелки
+    start_color();                              // Инициализация цветового режима
+    init_pair(1, COLOR_RED, COLOR_BLACK);       // Для стен - красный
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);      // Для потолка - синий
+    init_pair(3, COLOR_BLACK + 8, COLOR_BLACK); // Для пола - серый
 
     while(1)    // Game cycle
     {
@@ -216,7 +253,7 @@ int main()
         renderFrame();                                                  // Render a New Frame depends on New Coordinates
 
         displayStats();                                                 // Display Stats and Mini-map on the Screen
-    
+
         refresh();                                                      // Обновляем кадр
     }
 
