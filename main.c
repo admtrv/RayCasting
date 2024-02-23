@@ -54,7 +54,11 @@ float playerY = 14.0f;              // Player Start Position coordinate Y
 float playerDir = M_PI;             // Players Dirrection
 float playerSpeed = 5.0f;		    // Walking Speed
 float playerFOV = M_PI / 3.0f;      // Players Field of View
-float playersMaxDepth = 12.0f;      // Maximum Viewing Distance
+float playersMaxDepth = 13.0f;      // Maximum Viewing Distance
+
+#define gradientSize 10             // Size of Gradient Range
+char gradient1[10]="@%#+=*:-. ";    // Gradient of ASCII Symbols for Wall
+char gradient2[10]="&Oi?+~>:. ";    // Another Gradient of ASCII Symbols 
 
 void setWindowSize()
 {
@@ -211,49 +215,40 @@ void renderFrame()
 
         for (int y = 0; y < screenHeight; y++)
         {
-            if (y <= ceilingHeight)
+            if (y < ceilingHeight)                                                                             // Отрисовка потолка
             {
                 float d = 1.0f + ((float)y - screenHeight / 2.0) / ((float)screenHeight / 2.0);
-                int randomNumber = rand() % 2;
+                int gradientIndex = (int)(d * gradientSize);
+                if (gradientIndex < 0) gradientIndex = 0;
+                if (gradientIndex >= gradientSize) gradientIndex = gradientSize - 1;
 
-                char ceilingShader = ' ';
-                if (d < 0.25f)          {ceilingShader = (randomNumber == 0?'x':'&');}
-                else if (d < 0.5f)      {ceilingShader = (randomNumber == 0?'+':'*');}
-                else if (d < 0.75f)     {ceilingShader = (randomNumber == 0?'~':',');}
-                else if (d < 0.9f)      {ceilingShader = (randomNumber == 0?'.':'-');}
-                else                    {ceilingShader = ' ';}
+                char ceilingShader = gradient2[gradientIndex];
 
                 attron(COLOR_PAIR(2)); 
                 mvprintw(y,x,"%c",ceilingShader);
                 attroff(COLOR_PAIR(2));
             } 
-            else if (y > ceilingHeight && y <= floorHeight)
+            else if (y >= ceilingHeight && y <= floorHeight)                                                     // Отрисовка стен
             {
-                int randomNumber = rand() % 2;
+                int gradientIndex = (int)((wallDistance / playersMaxDepth) * gradientSize);
+                if (gradientIndex < 0) gradientIndex = 0;
+                if (gradientIndex >= gradientSize) gradientIndex = gradientSize - 1;
 
-                char wallShader = ' ';
-                if (wallDistance <= playersMaxDepth / 4.0f)			{wallShader = (randomNumber == 0?'@':'%');}	
-                else if (wallDistance < playersMaxDepth / 3.0f)     {wallShader = (randomNumber == 0?'&':'*');}
-                else if (wallDistance < playersMaxDepth / 2.0f)		{wallShader = (randomNumber == 0?'x':'=');}
-                else if (wallDistance < playersMaxDepth)			{wallShader = (randomNumber == 0?'~':':');}
-                else											    {wallShader = ' ';}
-                if (hitEdgeFlag)                                    {wallShader = ' ';}
+                char wallShader = gradient1[gradientIndex];
+                if (hitEdgeFlag) wallShader = ' ';
 
                 attron(COLOR_PAIR(1));
                 mvprintw(y,x,"%c",wallShader);
                 attroff(COLOR_PAIR(1));
             } 
-            else
+            else                                                                                                // Отрисовка пола
             {
                 float d = 1.0f - ((float)y - screenHeight / 2.0) / ((float)screenHeight / 2.0);
-                int randomNumber = rand() % 2;
+                int gradientIndex = (int)(d * gradientSize);
+                if (gradientIndex < 0) gradientIndex = 0;
+                if (gradientIndex >= gradientSize) gradientIndex = gradientSize - 1;
 
-                char floorShader = ' ';
-                if (d < 0.25f)          {floorShader = (randomNumber == 0?'x':'&');}
-                else if (d < 0.5f)      {floorShader = (randomNumber == 0?'+':'*');}
-                else if (d < 0.75f)     {floorShader = (randomNumber == 0?'~':',');}
-                else if (d < 0.9f)      {floorShader = (randomNumber == 0?'.':'-');}
-                else                    {floorShader = ' ';}
+                char floorShader = gradient2[gradientIndex];
                 
                 attron(COLOR_PAIR(3));
                 mvprintw(y,x,"%c",floorShader);
@@ -267,7 +262,6 @@ int main()
 {
     setWindowSize();                            // Initialization of Window Size
 
-    srand(time(NULL));                          // Инициализируем генератор случайных чисел
     clock_t timeBefore, timeAfter;              // Инициализируем временные пременные 
     timeBefore = clock();                       // Запоминаем текущее время 
     timeAfter = clock();
