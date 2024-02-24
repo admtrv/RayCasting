@@ -1,10 +1,11 @@
-![Logo]([http://url/a.png](https://github.com/admtrv/RayCastingEngine/blob/main/images/game.gif))
+![Logo](images/logo.png)
 # RayCasting Engine
 ---
 
 ## Introduction
 RayCasting is a technique in computer graphics that allows you to create 3D projections based on a 2D plane. This technique was particularly valued in an era when the processing power of computers was limited. It allowed games, the first of which was Wolfenstein 3D, to achieve an impressive illusion of three-dimensionality.
-![Showcase]([http://url/a.png](https://github.com/admtrv/RayCastingEngine/blob/main/images/game.gif))
+
+![Showcase](images/game.gif)
 
 ## Programming language
 The C programming language, known for its high performance and ability for low-level resource management, was chosen to realize the project. Graphics are displayed using the ncurses library, which allows efficient drawing in the console, creating complex text interfaces and visualizations. The Windows API is used to read keystrokes, providing reliable and responsive user interaction with the program. These technologies provide a strong set of tools for creating raycasting-based games. The project is compatible with Windows OC only.
