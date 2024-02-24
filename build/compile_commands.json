@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/DAnto/C programs/RayCastingEngine/build",
+  "command": "C:\\MinGW\\bin\\gcc.exe   -g -o CMakeFiles\\RayCastingEngine.dir\\main.c.obj -c \"C:\\Users\\DAnto\\C programs\\RayCastingEngine\\main.c\"",
+  "file": "C:/Users/DAnto/C programs/RayCastingEngine/main.c",
+  "output": "CMakeFiles/RayCastingEngine.dir/main.c.obj"
+}
+]
