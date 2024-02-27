@@ -32,38 +32,38 @@ Now let's look at the logic of the movement. Check the labels to see what each k
 * `S (down)` - walk backward
 * `A (left)`	- turn left
 * `D (right)` - turn right
-* `Esc` - Exit
+* `Esc` - exit
 
 In the code fragment below, we check whether the user is currently pressing the 'A' key to perform a left turn. For this purpose, the `GetAsyncKeyState` function is used, which checks the state of the specified key.
 ```c
 if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
-    {
-        playerDir += (playerSpeed * 0.75f) * frameTime;
-    }
+{
+	playerDir += (playerSpeed * 0.75f) * frameTime;
+}
 ```
 After the program recognizes that the 'A' key has been pressed (or 'D' for turn right), we simple increment or decrement the angle of the player with the player speed. 
 
 For the up and down logic, we need to get the `sin` and `cos` of the player angle to discover the player direction and what we need to increment for the player coordinates to move the player. In the code fragment below, we check whether the user is currently pressing the 'W' key to walk forward.
 ```c
 if (GetAsyncKeyState((unsigned short)'W') & 0x8000)
-    {
-	    playerX += sinf(playerDir) * playerSpeed * frameTime;
-	    playerY += cosf(playerDir) * playerSpeed * frameTime;
+{
+	playerX += sinf(playerDir) * playerSpeed * frameTime;
+	playerY += cosf(playerDir) * playerSpeed * frameTime;
 
-	    if (map[(int)playerY][(int)playerX] == '#')
-	    {
-		    playerX -= sinf(playerDir) * playerSpeed * frameTime;
-		    playerY -= cosf(playerDir) * playerSpeed * frameTime;
-	    }			
-    }
+	if (map[(int)playerY][(int)playerX] == '#')
+	{
+		playerX -= sinf(playerDir) * playerSpeed * frameTime;
+		playerY -= cosf(playerDir) * playerSpeed * frameTime;
+	}			
+}
 ```
 As you can see, we also check for a collision as we move, and if there is one, we stand in the same place.
 
 Similarly, we check for pressing the `Esc` key to exit the program at the right moment and clear the console window.
 ```c
 if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
-    {
-        system("cls");
-        exit(1);
-    }
+{
+	system("cls");
+	exit(1);
+}
 ```
