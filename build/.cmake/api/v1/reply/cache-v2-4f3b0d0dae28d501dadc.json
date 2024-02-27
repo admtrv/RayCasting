@@ -1654,6 +1654,18 @@
 			"value" : ""
 		},
 		{
+			"name" : "PDCURSES_LIBRARY",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to a library."
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/MinGW/lib/libpdcurses.dll.a"
+		},
+		{
 			"name" : "PKG_CONFIG_ARGN",
 			"properties" : 
 			[

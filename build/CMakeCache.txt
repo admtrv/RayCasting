@@ -294,6 +294,9 @@ MEMORYCHECK_COMMAND:FILEPATH=MEMORYCHECK_COMMAND-NOTFOUND
 //File that contains suppressions for the memory checker
 MEMORYCHECK_SUPPRESSIONS_FILE:FILEPATH=
 
+//Path to a library.
+PDCURSES_LIBRARY:FILEPATH=C:/MinGW/lib/libpdcurses.dll.a
+
 //Arguments to supply to pkg-config
 PKG_CONFIG_ARGN:STRING=
 
