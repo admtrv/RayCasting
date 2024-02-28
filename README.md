@@ -67,3 +67,160 @@ if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
 	exit(1);
 }
 ```
+## Logic
+
+RayCasting transforms a two-dimensional map, which is represented as an array of characters, into a three-dimensional projection on the screen. Our character array is a matrix with values `#` for wall and `.` for empty space.
+
+```c
+char map[mapHeight][mapWidth] = {
+    {"################"},
+    {"#..#...........#"},
+    {"#..#....########"},
+    {"#..#...........#"},
+    {"#..#...#.......#"},
+    {"#......#.......#"},
+    {"#..............#"},
+    {"###............#"},
+    {"#..............#"},
+    {"#......####..###"},
+    {"#......#.......#"},
+    {"#......#.......#"},
+    {"#..............#"},
+    {"#.....########.#"},
+    {"#..............#"},
+    {"################"}
+};
+```
+
+The logic behind RayCasting is to throw rays in the direction of the player's view. This is necessary to find walls on the map and check the distance to them in order to calculate the height of the lines from which the objects are drawn. 
+
+![Raycasting](images/illustration.png)
+
+The direction of the ray `rayDir` for drawing a particular stripe on the screen is based on the fact that during the entire pass along the axis X of the screen it is necessary to completely pass the angle of player's field of view `FOV`.
+
+```c
+void renderFrame()
+{
+    	for (int x = 0; x < screenWidth; x++)
+    	{
+        	float rayDir = (playerDir + playerFOV / 2.0f) - ((float)x / (float)screenWidth) * playerFOV;
+        	float wallDistance = 0.0f;
+	
+        	float rayX = sinf(rayDir);                                                                              
+        	float rayY = cosf(rayDir);
+
+		...
+    	}
+}
+```
+
+We will search for the distance to the wall iteratively: at the beginning we have a direction in which we want to check for the existence of an object, then we cyclically, in small steps `wallDistance += 0.1f` go in this direction. In the end, either the ray has collided with an object `hitWallFlag`, or it has gone beyond the radius of visibility `playersMaxDepth`.
+
+```c
+int hitWallFlag = 0;                                                                                    
+int hitEdgeFlag = 0;   
+ 
+while (!hitWallFlag && wallDistance < playersMaxDepth)                                                  
+{
+	wallDistance += 0.1f;                                                                               
+ 
+	int distanceX = (int)(playerX + rayX * wallDistance);                                              
+	int distanceY = (int)(playerY + rayY * wallDistance);                                             
+ 
+	if (distanceX < 0 || distanceX >= mapWidth || distanceY < 0 || distanceY >= mapHeight)              
+	{ 
+		hitWallFlag = 1;                                                                                
+		wallDistance = playersMaxDepth;
+	}
+	else if ( map[distanceY][distanceX] == '#')                                                         
+	{ 
+		hitWallFlag = 1;
+
+		...
+	}
+
+	for (int y = 0; y < screenHeight; y++)
+	{
+
+		...
+	}
+}
+```
+Well, now we have everything we need to create the illusion of a third dimension!
+
+## Rendering
+
+Having the distance `d` to the object in the required direction, we can calculate its height `b'` relative to the screen. So, we need to understand how the height of objects changes when the distance to them changes.
+
+![Triangles](images/math.png)
+
+To draw the stripe, we need to set two Y axis coordinates: the first one is the point where the wall starts and the ceiling ends, and the second one is where the wall ends and the floor starts. Let's make these two points symmetrical about the center in height by setting them as is below.
+
+![Triangles](images/cmd.png)
+
+It can be seen that if the distance to the wall becomes bigger, these points go to the center and the height of the stripe becomes smaller, so the sky and the floor cover almost all the space. And if the distance gets smaller, these points go to the borders and the stripe gets bigger. Let's take a look at how this is realized.
+
+```c
+int ceilingHeight = (float)(screenHeight/2.0) - screenHeight / ((float)wallDistance);                 
+int floorHeight = (float)(screenHeight/2.0) + screenHeight / ((float)wallDistance);                    
+
+for (int y = 0; y < screenHeight; y++)
+{
+	if (y < ceilingHeight)                                                                            
+	{
+		float d = 1.0f + ((float)y - screenHeight / 2.0) / ((float)screenHeight / 2.0);
+		int gradientIndex = (int)(d * gradientSize);
+		if (gradientIndex < 0) gradientIndex = 0;
+		if (gradientIndex >= gradientSize) gradientIndex = gradientSize - 1;
+
+		char ceilingShader = gradient2[gradientIndex];
+
+		attron(COLOR_PAIR(2)); 
+		mvprintw(y,x,"%c",ceilingShader);
+		attroff(COLOR_PAIR(2));
+	} 
+	else if (y >= ceilingHeight && y <= floorHeight)                                                  
+	{
+		int gradientIndex = (int)((wallDistance / playersMaxDepth) * gradientSize);
+		if (gradientIndex < 0) gradientIndex = 0;
+		if (gradientIndex >= gradientSize) gradientIndex = gradientSize - 1;
+
+		char wallShader = gradient1[gradientIndex];
+		if (hitEdgeFlag) wallShader = ' ';
+
+		attron(COLOR_PAIR(1));
+		mvprintw(y,x,"%c",wallShader);
+		attroff(COLOR_PAIR(1));
+	} 
+	else                                                                                           
+	{
+		float d = 1.0f - ((float)y - screenHeight / 2.0) / ((float)screenHeight / 2.0);
+		int gradientIndex = (int)(d * gradientSize);
+		if (gradientIndex < 0) gradientIndex = 0;
+		if (gradientIndex >= gradientSize) gradientIndex = gradientSize - 1;
+
+		char floorShader = gradient2[gradientIndex];
+                
+		attron(COLOR_PAIR(3));
+		mvprintw(y,x,"%c",floorShader);
+		attroff(COLOR_PAIR(3));
+	} 
+}
+```
+
+Here we calculate the brightness level of the character that will be displayed in each specific cell of the console based on the distance to the object. The characters themselves are taken from arrays, where gradients from the brightest to the darkest are already given.
+
+```c
+#define gradientSize 10        
+char gradient1[10]="@%#+=*:-. ";  
+char gradient2[10]="&Oi?+~>:. ";   
+```
+
+And the colors were initialized in the `main` function using the `init_pair` function.
+
+```c
+start_color();                            
+init_pair(1, COLOR_RED, COLOR_BLACK);       
+init_pair(2, COLOR_BLUE, COLOR_BLACK);      
+init_pair(3, COLOR_BLACK + 8, COLOR_BLACK); 
+```
