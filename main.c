@@ -43,8 +43,8 @@ float playerFOV = M_PI / 3.0f;      // Players field of view
 float playersMaxDepth = 13.0f;      // Maximum viewing distance
 
 #define gradientSize 10             // Size of gradient range
-char gradient1[10]="@%#+=*:-. ";    // Gradient of ASCII symbols for wall
-char gradient2[10]="&Oi?+~>:. ";    // Another gradient of ASCII symbols 
+char gradient1[gradientSize]="@%#+=*:-. ";    // Gradient of ASCII symbols for wall
+char gradient2[gradientSize]="&Oi?+~>:. ";    // Another gradient of ASCII symbols 
 
 void setWindowSize()
 {
