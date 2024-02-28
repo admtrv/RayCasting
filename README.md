@@ -26,6 +26,13 @@ And that's it!
 ## Control
 To make the player move, we'll set up a way to watch for key presses on the keyboard using the Windows API. We're going to look for when someone presses the 'W', 'S', 'A', and 'D' keys to move the player.
 
+```c
+void checkKeyState()
+{
+	...
+}
+```
+
 Now let's look at the logic of the movement. Check the labels to see what each key will do.
 
 * `W (up)` -	walk forwards
@@ -212,8 +219,8 @@ Here we calculate the brightness level of the character that will be displayed i
 
 ```c
 #define gradientSize 10        
-char gradient1[10]="@%#+=*:-. ";  
-char gradient2[10]="&Oi?+~>:. ";   
+char gradient1[gradientSize]="@%#+=*:-. ";  
+char gradient2[gradientSize]="&Oi?+~>:. ";   
 ```
 
 And the colors were initialized in the `main` function using the `init_pair` function.
