@@ -286,7 +286,7 @@ for (int i = 0; i < 2; i++)
 }
 ```
 
-Now we can see the edges of the walls!
+Now we can see the edges of the walls.
 
 ## Game cykle 
 
@@ -314,3 +314,9 @@ while(1)
 ```
 
 That's all, thank you for your attention!
+
+## Sources and inspirations
+1. [CommandLineFPS](https://github.com/OneLoneCoder/CommandLineFPS)
+2. [RayCastingTutorial](https://github.com/vinibiavatti1/RayCastingTutorial)
+3. [OpenGL-Raycaster_v1](https://github.com/3DSage/OpenGL-Raycaster_v1?tab=readme-ov-file)
+4. [Raycasting game engine with ASCII display](https://www.youtube.com/watch?v=94YOd0gimF8)
