@@ -15,7 +15,7 @@ The C programming language, known for its high performance and ability for low-l
 2. Then unpack and open the project in the console line
 3. To compile:
 ```
-gcc -o main main.c –lpdcurses
+gcc -o main main.c -lpdcurses
 ```
 4. To run:
 ```
