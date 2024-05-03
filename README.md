@@ -15,7 +15,7 @@ The C programming language, known for its high performance and ability for low-l
 2. Then unpack and open the project in the console line
 3. To compile:
 ```
-gcc -o main main.c –lpdcurses
+gcc -o main main.c -lpdcurses
 ```
 4. To run:
 ```
@@ -231,3 +231,92 @@ init_pair(1, COLOR_RED, COLOR_BLACK);
 init_pair(2, COLOR_BLUE, COLOR_BLACK);      
 init_pair(3, COLOR_BLACK + 8, COLOR_BLACK); 
 ```
+
+## Edge rendering
+
+Now let's look at the display of wall edges. If we have determined that there has been a collision with a wall, we can immediately determine its location and the location of its four edges.
+So we have four vectors that point from the viewer exactly into the edges of the wall. If the angle between the emitted ray and one of these vectors becomes small, we will take this part of the wall as an edge and not draw it.
+
+![Edges](images/edge.png)
+
+The minimum angle between vectors is achieved when their scalar product is maximized. We will look for the scalar product between the direction vector and the vectors leading into the edges of the wall.
+
+```c
+float edgeDistance[4]; 
+float dotProduct[4];
+
+for (int i = 0; i < 4; i++)
+{
+	int edgeX = i % 2;
+	int edgeY = i / 2;
+
+	float vectorX = (float)distanceX + edgeX - playerX;
+	float vectorY = (float)distanceY + edgeY - playerY;
+
+	edgeDistance[i] = sqrtf(vectorX * vectorX + vectorY * vectorY);
+	dotProduct[i] = (rayX * vectorX / edgeDistance[i]) + (rayY * vectorY / edgeDistance[i]);
+}
+                
+for (int i = 0; i < 4; i++)
+{
+	for (int j = i + 1; j < 4; j++) 
+	{
+		if (edgeDistance[j] < edgeDistance[i]) 
+		{
+			float temp = edgeDistance[j];
+			edgeDistance[j] = edgeDistance[i];
+			edgeDistance[i] = temp;
+
+			temp = dotProduct[j];
+			dotProduct[j] = dotProduct[i];
+			dotProduct[i] = temp;
+		}
+	}
+}
+
+float proximity = 0.004f;
+
+for (int i = 0; i < 2; i++)
+{
+	if (acosf(dotProduct[i]) < proximity) 
+	{
+		hitEdgeFlag = 1;
+		break;
+	}
+}
+```
+
+Now we can see the edges of the walls.
+
+## Game cykle 
+
+The projection should be redrawn at each iteration of the rendering. That's why our game loop will consist of an infinitely running `while(1)`, which every iteration will calculate the time change per frame, check for keyboard presses, render a new frame based on the new changes, overlay the useful information and statistics on top of it, and display it all on the screen from the buffer. Here's what the realization of this looks like in code.
+
+```c
+while(1)  
+{
+        timeAfter = clock();                                           
+        frameTime = (float)(timeAfter - timeBefore) / CLOCKS_PER_SEC;  
+        timeBefore = timeAfter;                                        
+        
+        map[(int)playerY][(int)playerX] = '.';                       
+
+        checkKeyState();                                              
+
+        map[(int)playerY][(int)playerX] = 'o';                       
+
+        renderFrame();                                                
+
+        displayStats();                                                
+
+        refresh();                                                     
+}
+```
+
+That's all, thank you for your attention!
+
+## Sources and inspirations
+1. [CommandLineFPS](https://github.com/OneLoneCoder/CommandLineFPS)
+2. [RayCastingTutorial](https://github.com/vinibiavatti1/RayCastingTutorial)
+3. [OpenGL-Raycaster_v1](https://github.com/3DSage/OpenGL-Raycaster_v1?tab=readme-ov-file)
+4. [Raycasting game engine with ASCII display](https://www.youtube.com/watch?v=94YOd0gimF8)
