@@ -11,16 +11,10 @@
 The C programming language, known for its high performance and ability for low-level resource management, was chosen to realize the project. Graphics are displayed using the [ncurses](https://en.wikipedia.org/wiki/Ncurses#:~:text=ncurses%20(new%20curses)%20is%20a,in%20a%20terminal%2Dindependent%20manner.) library, which allows efficient drawing in the console, creating complex text interfaces and visualizations. The Windows API is used to read keystrokes, providing reliable and responsive user interaction with the program. These technologies provide a strong set of tools for creating raycasting-based games. The project is compatible with Windows OC only.
 
 ## How to run the project
-1. To get started, you'll need to install the ncurses library, as it is not included by default
-2. Then unpack and open the project in the console line
-3. To compile:
-```
-gcc -o main main.c -lpdcurses
-```
-4. To run:
-```
-main
-```
+1. To get started, you'll need to install the ncurses/curses library, as it is not included by default
+2. Then unpack and open the project 
+3. To start, simply run the executable file from the /build directory in the root
+   
 And that's it!
 
 ## Control
