@@ -50,7 +50,7 @@ void setWindowSize()
 {
     HANDLE handleConsole = GetStdHandle(STD_OUTPUT_HANDLE);             // Get the current console window descriptor
 
-    COORD bufferSize = {screenWidth, screenHeight};                     // Set the screen buffer size
+    COORD bufferSize = {screenWidth-1, screenHeight};                     // Set the screen buffer size
     SetConsoleScreenBufferSize(handleConsole, bufferSize);              // (it is necessary that the window size does not exceed the buffer size)
 
     SMALL_RECT windowSize = {0, 0, screenWidth - 1, screenHeight - 1};  // Create a structure with information about the size and position of the console window
