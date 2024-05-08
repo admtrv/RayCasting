@@ -1,5 +1,5 @@
 ![Logo](images/logo.png)
-# RayCasting Engine
+# RayCasting Console Demo
 ---
 
 ## Introduction
