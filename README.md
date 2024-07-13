@@ -13,7 +13,7 @@ The C programming language, known for its high performance and ability for low-l
 
 ## How to run the project
 1. To get started, you'll need to install the ncurses library, as it is not included by default. Also you need to install the CMake tool to automate project building.
-2. Then unpack and open root the project in the console line
+2. Then unpack and open root of the project in the console line
 3. To compile:
 ```
 mkdir build
@@ -88,10 +88,10 @@ int key = getch();
 switch (key)
 {
 	case A: case KEY_LEFT:
-        playerDir += (playerSpeed * 0.75f) * frameTime;
-        break;
+        	playerDir += (playerSpeed * 0.75f) * frameTime;
+        	break;
 
-	...
+		...
 
 }
 ```
