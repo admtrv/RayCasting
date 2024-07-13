@@ -53,16 +53,16 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\DAnto\C programs\RayCastingEngine"
+CMAKE_SOURCE_DIR = "C:\Users\DAnto\C programs\RayCasting"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\DAnto\C programs\RayCastingEngine\build"
+CMAKE_BINARY_DIR = "C:\Users\DAnto\C programs\RayCasting\build"
 
 #=============================================================================
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/RayCastingEngine.dir/all
+all: CMakeFiles/RayCasting.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -70,34 +70,34 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/RayCastingEngine.dir/clean
+clean: CMakeFiles/RayCasting.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/RayCastingEngine.dir
+# Target rules for target CMakeFiles/RayCasting.dir
 
 # All Build rule for target.
-CMakeFiles/RayCastingEngine.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCastingEngine.dir\build.make CMakeFiles/RayCastingEngine.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCastingEngine.dir\build.make CMakeFiles/RayCastingEngine.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\DAnto\C programs\RayCastingEngine\build\CMakeFiles" --progress-num=1,2 "Built target RayCastingEngine"
-.PHONY : CMakeFiles/RayCastingEngine.dir/all
+CMakeFiles/RayCasting.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCasting.dir\build.make CMakeFiles/RayCasting.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCasting.dir\build.make CMakeFiles/RayCasting.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\DAnto\C programs\RayCasting\build\CMakeFiles" --progress-num=1,2 "Built target RayCasting"
+.PHONY : CMakeFiles/RayCasting.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/RayCastingEngine.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCastingEngine\build\CMakeFiles" 2
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/RayCastingEngine.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCastingEngine\build\CMakeFiles" 0
-.PHONY : CMakeFiles/RayCastingEngine.dir/rule
+CMakeFiles/RayCasting.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCasting\build\CMakeFiles" 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/RayCasting.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCasting\build\CMakeFiles" 0
+.PHONY : CMakeFiles/RayCasting.dir/rule
 
 # Convenience name for target.
-RayCastingEngine: CMakeFiles/RayCastingEngine.dir/rule
-.PHONY : RayCastingEngine
+RayCasting: CMakeFiles/RayCasting.dir/rule
+.PHONY : RayCasting
 
 # clean rule for target.
-CMakeFiles/RayCastingEngine.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCastingEngine.dir\build.make CMakeFiles/RayCastingEngine.dir/clean
-.PHONY : CMakeFiles/RayCastingEngine.dir/clean
+CMakeFiles/RayCasting.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCasting.dir\build.make CMakeFiles/RayCasting.dir/clean
+.PHONY : CMakeFiles/RayCasting.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

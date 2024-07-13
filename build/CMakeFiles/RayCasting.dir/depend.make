@@ -1,2 +1,2 @@
-# Empty dependencies file for RayCastingEngine.
+# Empty dependencies file for RayCasting.
 # This may be replaced when dependencies are built.

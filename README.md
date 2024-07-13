@@ -1,5 +1,5 @@
 ![Logo](images/logo.png)
-# RayCasting Command Line Demo
+# Command Line RayCasting Demo Visualization
 ---
 
 ## Introduction
@@ -8,15 +8,54 @@
 ![Showcase](images/game.gif)
 
 ## Programming language
-The C programming language, known for its high performance and ability for low-level resource management, was chosen to realize the project. Graphics are displayed using the [ncurses](https://en.wikipedia.org/wiki/Ncurses#:~:text=ncurses%20(new%20curses)%20is%20a,in%20a%20terminal%2Dindependent%20manner.) library, which allows efficient drawing in the console, creating complex text interfaces and visualizations. The Windows API is used to read keystrokes, providing reliable and responsive user interaction with the program. These technologies provide a strong set of tools for creating raycasting-based games. The project is compatible with Windows OC only.
+The C programming language, known for its high performance and ability for low-level resource management, was chosen to realize the project. Graphics are displayed using the [ncurses](https://en.wikipedia.org/wiki/Ncurses#:~:text=ncurses%20(new%20curses)%20is%20a,in%20a%20terminal%2Dindependent%20manner.) library, which allows efficient drawing in the console, creating complex text interfaces and visualizations, and reading keystrokes, providing reliable and responsive user interaction with the program. These technologies provide a strong set of tools for creating raycasting-based games. The project is compatible with Linux and Windows as well.
+
 
 ## How to run the project
-To start, simply run the executable file from the `/build` directory in the root
-   
+1. To get started, you'll need to install the ncurses library, as it is not included by default. Also you need to install the CMake tool to automate project building.
+2. Then unpack and open root the project in the console line
+3. To compile:
+```
+mkdir build
+cd build
+cmake -G "MinGW Makefiles" .. # here specify your own compilator
+```
+4. To build:
+```
+cmake --build .
+```
+5. To run:
+```
+RayCasting # or your name of executable file
+```
 And that's it!
 
+Example of CMakeLists.txt file is defined here. Instead of my library search path, set your own or don't do it at all.
+Also, depending on the system, use different variations of the library. For Linux - `ncurses`. For Windows - `pdcurses`:
+
+```
+cmake_minimum_required(VERSION 3.5)
+project(RayCasting VERSION 0.1.0 LANGUAGES C)
+
+add_executable(RayCasting main.c)
+
+# Searching and connecting library
+find_library(PDCURSES_LIBRARY NAMES pdcurses PATHS "C:/MinGW/lib") # Path to pdcurses library 
+
+if(PDCURSES_LIBRARY)
+    message(STATUS "Library pdcurses found: ${PDCURSES_LIBRARY}")
+    target_link_libraries(RayCasting ${PDCURSES_LIBRARY})
+else()
+    message(FATAL_ERROR "Error finding pdcurses library")
+endif()
+
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)
+```
+
 ## Control
-To make the player move, we'll set up a way to watch for key presses on the keyboard using the Windows API. We're going to look for when someone presses the 'W', 'S', 'A', and 'D' keys to move the player.
+To make the player move, we'll set up a way to watch for key presses on the keyboard. We're going to look for when someone presses the 'W', 'S', 'A', and 'D' keys to move the player.
 
 ```c
 void checkKeyState()
@@ -27,44 +66,60 @@ void checkKeyState()
 
 Now let's look at the logic of the movement. Check the labels to see what each key will do.
 
-* `W (up)` -	walk forwards
-* `S (down)` - walk backward
-* `A (left)`	- turn left
-* `D (right)` - turn right
 * `Esc` - exit
+* `W (up)` - walk forwards
+* `S (down)` - walk backward
+* `A (left)` - turn left
+* `D (right)` - turn right
 
-In the code fragment below, we check whether the user is currently pressing the 'A' key to perform a left turn. For this purpose, the `GetAsyncKeyState` function is used, which checks the state of the specified key.
+For this purpose lets define:
 ```c
-if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
+#define ESC 27					    // ESC key code
+#define W 119					    // W key code
+#define A 97					    // A key code
+#define S 115					    // S key code
+#define D 100					    // D key code
+```
+
+In the code fragment below, we check whether the user is currently pressing the 'A' key to perform a left turn. 
+```c
+int key = getch();
+
+switch (key)
 {
-	playerDir += (playerSpeed * 0.75f) * frameTime;
+	case A: case KEY_LEFT:
+        playerDir += (playerSpeed * 0.75f) * frameTime;
+        break;
+
+	...
+
 }
 ```
 After the program recognizes that the 'A' key has been pressed (or 'D' for turn right), we simple increment or decrement the angle of the player with the player speed. 
 
 For the up and down logic, we need to get the `sin` and `cos` of the player angle to discover the player direction and what we need to increment for the player coordinates to move the player. In the code fragment below, we check whether the user is currently pressing the 'W' key to walk forward.
 ```c
-if (GetAsyncKeyState((unsigned short)'W') & 0x8000)
-{
-	playerX += sinf(playerDir) * playerSpeed * frameTime;
-	playerY += cosf(playerDir) * playerSpeed * frameTime;
+case W: case KEY_UP:
+    playerX += sinf(playerDir) * playerSpeed * frameTime;
+    playerY += cosf(playerDir) * playerSpeed * frameTime;
 
-	if (map[(int)playerY][(int)playerX] == '#')
-	{
-		playerX -= sinf(playerDir) * playerSpeed * frameTime;
-		playerY -= cosf(playerDir) * playerSpeed * frameTime;
-	}			
-}
+    if (map[(int)playerY][(int)playerX] == '#')
+    {
+        playerX -= sinf(playerDir) * playerSpeed * frameTime;
+        playerY -= cosf(playerDir) * playerSpeed * frameTime;
+    }
+    break;
 ```
 As you can see, we also check for a collision as we move, and if there is one, we stand in the same place.
 
 Similarly, we check for pressing the `Esc` key to exit the program at the right moment and clear the console window.
 ```c
-if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
-{
-	system("cls");
-	exit(1);
-}
+case ESC:                                                       
+    clear();                                                    
+    refresh();                                                  
+    endwin();                                                   
+    exit(1);
+    break;
 ```
 ## Logic
 

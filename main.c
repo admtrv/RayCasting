@@ -1,5 +1,5 @@
 /*
-    Command Line Ray Casting Engine (FPS)
+    Command Line RayCasting Demo Visualization
 */
 
 #define _USE_MATH_DEFINES           // Specify math constants 
@@ -9,8 +9,12 @@
 #include <math.h>
 #include <time.h>
 #include <curses.h>                 // Library for comfortable i/o using the terminal
-#include <windows.h>                // Windows API
 
+#define ESC 27					    // ESC key code
+#define W 119					    // W key code
+#define A 97					    // A key code
+#define S 115					    // S key code
+#define D 100					    // D key code
 #define screenWidth 120             // Console screen size X (columns)
 #define screenHeight 30             // Console screen size Y (rows)
 #define mapWidth 16                 // World size X (columns)
@@ -42,70 +46,55 @@ float playerSpeed = 5.0f;		    // Walking speed
 float playerFOV = M_PI / 3.0f;      // Players field of view
 float playersMaxDepth = 13.0f;      // Maximum viewing distance
 
-#define gradientSize 10             // Size of gradient range
-char gradient1[gradientSize]="@%#+=*:-. ";    // Gradient of ASCII symbols for wall
-char gradient2[gradientSize]="&Oi?+~>:. ";    // Another gradient of ASCII symbols 
-
-void setWindowSize()
-{
-    HANDLE handleConsole = GetStdHandle(STD_OUTPUT_HANDLE);             // Get the current console window descriptor
-
-    COORD bufferSize = {screenWidth-1, screenHeight};                     // Set the screen buffer size
-    SetConsoleScreenBufferSize(handleConsole, bufferSize);              // (it is necessary that the window size does not exceed the buffer size)
-
-    SMALL_RECT windowSize = {0, 0, screenWidth - 1, screenHeight - 1};  // Create a structure with information about the size and position of the console window
-
-    SetConsoleWindowInfo(handleConsole, TRUE, &windowSize);             // Set the size and position of the console window
-
-    HWND consoleWindow = GetConsoleWindow();                            // Get the descriptor of the current console window to change its styles
-
-    LONG style = GetWindowLong(consoleWindow, GWL_STYLE);               // Get current window styles
-
-    style &= ~(WS_MAXIMIZEBOX | WS_SIZEBOX);                            // Remove styles that allow user to resize the window
-
-    SetWindowLong(consoleWindow, GWL_STYLE, style);                     // Installing the modified styles back
-}
+#define gradientSize 10                         // Size of gradient range
+char gradient1[gradientSize]="@%#+=*:-. ";      // Gradient of ASCII symbols for wall
+char gradient2[gradientSize]="&Oi?+~>:. ";      // Another gradient of ASCII symbols 
 
 void checkKeyState()
 {
-    if (GetAsyncKeyState((unsigned short)'A') & 0x8000)             // Processing a left turn
-    {
-        playerDir += (playerSpeed * 0.75f) * frameTime;
-    }
+    int key = getch();
 
-    if (GetAsyncKeyState((unsigned short)'D') & 0x8000)             // Processing a right turn
+    switch (key)
     {
-        playerDir -= (playerSpeed * 0.75f) * frameTime;
-    }
+        case W: case KEY_UP:                                            // Processing of forward movement
+            playerX += sinf(playerDir) * playerSpeed * frameTime;
+            playerY += cosf(playerDir) * playerSpeed * frameTime;
 
-    if (GetAsyncKeyState((unsigned short)'W') & 0x8000)             // Processing of forward movement
-    {
-	    playerX += sinf(playerDir) * playerSpeed * frameTime;
-	    playerY += cosf(playerDir) * playerSpeed * frameTime;
+            if (map[(int)playerY][(int)playerX] == '#')                 // Processing wall collision
+            {
+                playerX -= sinf(playerDir) * playerSpeed * frameTime;
+                playerY -= cosf(playerDir) * playerSpeed * frameTime;
+            }
+            break;
 
-	    if (map[(int)playerY][(int)playerX] == '#')                 // Processing wall collision
-	    {
-		    playerX -= sinf(playerDir) * playerSpeed * frameTime;
-		    playerY -= cosf(playerDir) * playerSpeed * frameTime;
-	    }			
-    }
-        
-    if (GetAsyncKeyState((unsigned short)'S') & 0x8000)             // Processing of backward movement
-    {
-	    playerX -= sinf(playerDir) * playerSpeed * frameTime;
-	    playerY -= cosf(playerDir) * playerSpeed * frameTime;
+        case S: case KEY_DOWN:                                          // Processing of backward movement
+            playerX -= sinf(playerDir) * playerSpeed * frameTime;
+            playerY -= cosf(playerDir) * playerSpeed * frameTime;
 
-	    if (map[(int)playerY][(int)playerX] == '#')                 // Processing wall collision 
-	    {
-		    playerX += sinf(playerDir) * playerSpeed * frameTime;
-		    playerY += cosf(playerDir) * playerSpeed * frameTime;
-	    }			
-    }
+            if (map[(int)playerY][(int)playerX] == '#')                 // Processing wall collision 
+            {
+                playerX += sinf(playerDir) * playerSpeed * frameTime;
+                playerY += cosf(playerDir) * playerSpeed * frameTime;
+            }
+            break;
 
-    if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)                       // Processing of program exit
-    {
-        system("cls");
-        exit(1);
+        case A: case KEY_LEFT:                                          // Processing a left turn
+            playerDir += (playerSpeed * 0.75f) * frameTime;
+            break;
+
+        case D: case KEY_RIGHT:                                         // Processing a right turn
+            playerDir -= (playerSpeed * 0.75f) * frameTime;
+            break;
+
+        case ESC:                                                       // Processing of program exit
+            clear();                                                    // Clear the console
+            refresh();                                                  // Refresh the screen
+            endwin();                                                   // Exiting ncurses mode
+            exit(1);
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -246,8 +235,6 @@ void renderFrame()
 
 int main() 
 {
-    setWindowSize();                            // Initialization of window size
-
     clock_t timeBefore, timeAfter;              // Initialization of time variables 
     timeBefore = clock();                       // Storing the current time
     timeAfter = clock();
@@ -257,6 +244,7 @@ int main()
     initscr();                                  // Initialization of ncurses mode
     cbreak();                                   // Disable string buffering
     noecho();                                   // Do not display input characters
+    nodelay(stdscr, TRUE);                      // Enable non-blocking input
     start_color();                              // Initialization of the color mode
     init_pair(1, COLOR_RED, COLOR_BLACK);       // For the walls - red
     init_pair(2, COLOR_BLUE, COLOR_BLACK);      // For the ceiling - blue
@@ -285,3 +273,4 @@ int main()
 
     return 0;
 }
+

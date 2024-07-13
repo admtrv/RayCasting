@@ -56,10 +56,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\DAnto\C programs\RayCastingEngine"
+CMAKE_SOURCE_DIR = "C:\Users\DAnto\C programs\RayCasting"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\DAnto\C programs\RayCastingEngine\build"
+CMAKE_BINARY_DIR = "C:\Users\DAnto\C programs\RayCasting\build"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -77,7 +77,7 @@ package/fast: package
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Run CPack packaging tool for source..."
-	"C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/DAnto/C programs/RayCastingEngine/build/CPackSourceConfig.cmake"
+	"C:\Program Files\CMake\bin\cpack.exe" --config ./CPackSourceConfig.cmake "C:/Users/DAnto/C programs/RayCasting/build/CPackSourceConfig.cmake"
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -106,9 +106,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCastingEngine\build\CMakeFiles" "C:\Users\DAnto\C programs\RayCastingEngine\build\\CMakeFiles\progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCasting\build\CMakeFiles" "C:\Users\DAnto\C programs\RayCasting\build\\CMakeFiles\progress.marks"
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCastingEngine\build\CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\DAnto\C programs\RayCasting\build\CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -136,24 +136,24 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named RayCastingEngine
+# Target rules for targets named RayCasting
 
 # Build rule for target.
-RayCastingEngine: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 RayCastingEngine
-.PHONY : RayCastingEngine
+RayCasting: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 RayCasting
+.PHONY : RayCasting
 
 # fast build rule for target.
-RayCastingEngine/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCastingEngine.dir\build.make CMakeFiles/RayCastingEngine.dir/build
-.PHONY : RayCastingEngine/fast
+RayCasting/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCasting.dir\build.make CMakeFiles/RayCasting.dir/build
+.PHONY : RayCasting/fast
 
 main.obj: main.c.obj
 .PHONY : main.obj
 
 # target to build an object file
 main.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCastingEngine.dir\build.make CMakeFiles/RayCastingEngine.dir/main.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCasting.dir\build.make CMakeFiles/RayCasting.dir/main.c.obj
 .PHONY : main.c.obj
 
 main.i: main.c.i
@@ -161,7 +161,7 @@ main.i: main.c.i
 
 # target to preprocess a source file
 main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCastingEngine.dir\build.make CMakeFiles/RayCastingEngine.dir/main.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCasting.dir\build.make CMakeFiles/RayCasting.dir/main.c.i
 .PHONY : main.c.i
 
 main.s: main.c.s
@@ -169,7 +169,7 @@ main.s: main.c.s
 
 # target to generate assembly for a file
 main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCastingEngine.dir\build.make CMakeFiles/RayCastingEngine.dir/main.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\RayCasting.dir\build.make CMakeFiles/RayCasting.dir/main.c.s
 .PHONY : main.c.s
 
 # Help Target
@@ -182,7 +182,7 @@ help:
 	@echo ... package
 	@echo ... package_source
 	@echo ... rebuild_cache
-	@echo ... RayCastingEngine
+	@echo ... RayCasting
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
