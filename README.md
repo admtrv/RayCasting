@@ -8,11 +8,11 @@
 ![Showcase](images/game.gif)
 
 ## Programming language
-The C programming language, known for its high performance and ability for low-level resource management, was chosen to realize the project. Graphics are displayed using the [ncurses](https://en.wikipedia.org/wiki/Ncurses#:~:text=ncurses%20(new%20curses)%20is%20a,in%20a%20terminal%2Dindependent%20manner.) library, which allows efficient drawing in the console, creating complex text interfaces and visualizations, and reading keystrokes, providing reliable and responsive user interaction with the program. These technologies provide a strong set of tools for creating raycasting-based games. The project is compatible with Linux and Windows as well.
+The C programming language, known for its high performance and ability for low-level resource management, was chosen to realize the project. Graphics are displayed using the [curses](https://en.wikipedia.org/wiki/Ncurses#:~:text=ncurses%20(new%20curses)%20is%20a,in%20a%20terminal%2Dindependent%20manner.) library, which allows efficient drawing in the console, creating complex text interfaces and visualizations, and reading keystrokes, providing reliable and responsive user interaction with the program. These technologies provide a strong set of tools for creating raycasting-based games. The project is compatible with Linux and Windows as well.
 
 
 ## How to run the project
-1. To get started, you'll need to install the ncurses library, as it is not included by default. Also you need to install the CMake tool to automate project building.
+1. To get started, you'll need to install the curses library, as it is not included by default. Also you need to install the CMake tool to automate project building.
 2. Then unpack and open root of the project in the console line
 3. To compile:
 ```
