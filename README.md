@@ -1,5 +1,5 @@
 ![Logo](images/logo.png)
-# Command Line RayCasting Demo Visualization
+# Command Line RayCasting Visualization
 ---
 
 ## Introduction
