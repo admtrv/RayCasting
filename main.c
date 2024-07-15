@@ -1,5 +1,5 @@
 /*
-    Command Line RayCasting Demo Visualization
+    Command Line RayCasting Visualization
 */
 
 #define _USE_MATH_DEFINES           // Specify math constants 
