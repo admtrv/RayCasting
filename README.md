@@ -1,6 +1,8 @@
-![Logo](images/logo.png)
-# Command Line RayCasting Visualization
----
+<p align="center">
+  <img src="images/logo.png" alt="Logo" width="220">
+</p>
+
+<h1 align="center">Command Line RayCasting Visualization</h1>
 
 ## Introduction
 **[RayCasting](https://en.wikipedia.org/wiki/Ray_casting)** - technique in computer graphics that allows you to create 3D projections based on a 2D plane. This technique was particularly valued in an era when the processing power of computers was limited. It allowed games, the first of which was [Wolfenstein 3D](https://en.wikipedia.org/wiki/Wolfenstein_3D), to achieve an impressive illusion of three-dimensionality.
