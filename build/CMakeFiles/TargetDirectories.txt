@@ -1,5 +1,0 @@
-C:/Users/DAnto/C programs/RayCasting/build/CMakeFiles/RayCasting.dir
-C:/Users/DAnto/C programs/RayCasting/build/CMakeFiles/package.dir
-C:/Users/DAnto/C programs/RayCasting/build/CMakeFiles/package_source.dir
-C:/Users/DAnto/C programs/RayCasting/build/CMakeFiles/edit_cache.dir
-C:/Users/DAnto/C programs/RayCasting/build/CMakeFiles/rebuild_cache.dir

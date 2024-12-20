@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\RayCasting.dir/objects.a
-C:\MinGW\bin\ar.exe qc CMakeFiles\RayCasting.dir/objects.a @CMakeFiles\RayCasting.dir\objects1.rsp
-C:\MinGW\bin\gcc.exe -Wl,--whole-archive CMakeFiles\RayCasting.dir/objects.a -Wl,--no-whole-archive -o RayCasting.exe -Wl,--out-implib,libRayCasting.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\RayCasting.dir\linkLibs.rsp
