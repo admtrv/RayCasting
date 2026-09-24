@@ -1,18 +1,17 @@
-cmake_minimum_required(VERSION 3.5)
-project(RayCasting VERSION 0.1.0 LANGUAGES C)
+# CMakeLists.txt
 
-add_executable(RayCasting main.c)
+cmake_minimum_required(VERSION 3.22)
+project(RayCasting C)
 
-# Searching and connecting library
-find_library(PDCURSES_LIBRARY NAMES pdcurses PATHS "C:/MinGW/lib")
+set(CMAKE_C_STANDARD 11)
 
-if(PDCURSES_LIBRARY)
-    message(STATUS "Library pdcurses found: ${PDCURSES_LIBRARY}")
-    target_link_libraries(RayCasting ${PDCURSES_LIBRARY})
-else()
-    message(FATAL_ERROR "Error finding pdcurses library")
-endif()
+# creating executable
+add_executable(${PROJECT_NAME} main.c)
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+# linking curses library
+find_package(Curses REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${CURSES_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CURSES_INCLUDE_DIR})
+
+# linking math library
+target_link_libraries(${PROJECT_NAME} PRIVATE m)

@@ -38,6 +38,7 @@ char map[mapHeight][mapWidth] = {   // Create map of the world: '#' = wall / '.'
     {"################"}
 };
 float frameTime = 0.0f;             // Time of one frame
+#define keyTime (1.0f / 30.0f)      // Time of one key press, keyboard autorepeat rate
 
 float playerX = 5.0f;               // Player start position coordinate X 
 float playerY = 14.0f;              // Player start position coordinate Y 
@@ -45,6 +46,10 @@ float playerDir = M_PI;             // Players dirrection
 float playerSpeed = 5.0f;		    // Walking speed
 float playerFOV = M_PI / 3.0f;      // Players field of view
 float playersMaxDepth = 13.0f;      // Maximum viewing distance
+
+#define colorRed 160                            // Wall color, from 256-color palette
+#define colorBlue 27                            // Ceiling color, from 256-color palette
+#define colorGray 250                           // Floor color, from 256-color palette
 
 #define gradientSize 10                         // Size of gradient range
 char gradient1[gradientSize]="@%#+=*:-. ";      // Gradient of ASCII symbols for wall
@@ -57,33 +62,33 @@ void checkKeyState()
     switch (key)
     {
         case W: case KEY_UP:                                            // Processing of forward movement
-            playerX += sinf(playerDir) * playerSpeed * frameTime;
-            playerY += cosf(playerDir) * playerSpeed * frameTime;
+            playerX += sinf(playerDir) * playerSpeed * keyTime;
+            playerY += cosf(playerDir) * playerSpeed * keyTime;
 
             if (map[(int)playerY][(int)playerX] == '#')                 // Processing wall collision
             {
-                playerX -= sinf(playerDir) * playerSpeed * frameTime;
-                playerY -= cosf(playerDir) * playerSpeed * frameTime;
+                playerX -= sinf(playerDir) * playerSpeed * keyTime;
+                playerY -= cosf(playerDir) * playerSpeed * keyTime;
             }
             break;
 
         case S: case KEY_DOWN:                                          // Processing of backward movement
-            playerX -= sinf(playerDir) * playerSpeed * frameTime;
-            playerY -= cosf(playerDir) * playerSpeed * frameTime;
+            playerX -= sinf(playerDir) * playerSpeed * keyTime;
+            playerY -= cosf(playerDir) * playerSpeed * keyTime;
 
             if (map[(int)playerY][(int)playerX] == '#')                 // Processing wall collision 
             {
-                playerX += sinf(playerDir) * playerSpeed * frameTime;
-                playerY += cosf(playerDir) * playerSpeed * frameTime;
+                playerX += sinf(playerDir) * playerSpeed * keyTime;
+                playerY += cosf(playerDir) * playerSpeed * keyTime;
             }
             break;
 
         case A: case KEY_LEFT:                                          // Processing a left turn
-            playerDir += (playerSpeed * 0.75f) * frameTime;
+            playerDir += (playerSpeed * 0.75f) * keyTime;
             break;
 
         case D: case KEY_RIGHT:                                         // Processing a right turn
-            playerDir -= (playerSpeed * 0.75f) * frameTime;
+            playerDir -= (playerSpeed * 0.75f) * keyTime;
             break;
 
         case ESC:                                                       // Processing of program exit
@@ -245,10 +250,14 @@ int main()
     cbreak();                                   // Disable string buffering
     noecho();                                   // Do not display input characters
     nodelay(stdscr, TRUE);                      // Enable non-blocking input
+    keypad(stdscr, TRUE);                       // Decode arrow keys instead of ESC sequences
+    set_escdelay(25);                           // Do not wait a second after ESC press
+    curs_set(0);                                // Hide cursor
     start_color();                              // Initialization of the color mode
-    init_pair(1, COLOR_RED, COLOR_BLACK);       // For the walls - red
-    init_pair(2, COLOR_BLUE, COLOR_BLACK);      // For the ceiling - blue
-    init_pair(3, COLOR_BLACK + 8, COLOR_BLACK); // For the floor - gray
+    use_default_colors();                       // Allow terminal default background (-1)
+    init_pair(1, colorRed, -1);                 // For the walls - red
+    init_pair(2, colorBlue, -1);                // For the ceiling - blue
+    init_pair(3, colorGray, -1);                // For the floor - gray
 
     while(1)    // Game cycle
     {
